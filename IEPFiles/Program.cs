@@ -1,6 +1,7 @@
 using IEPFiles;
 using Coravel;
 using Serilog;
+using Serilog.Formatting.Json;
 
 // creating the Serilog ILogger
 Log.Logger = new LoggerConfiguration()
@@ -8,6 +9,9 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.File(path: "logs/logs.txt",
                 restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
                 rollingInterval: RollingInterval.Day) // setting file log levels to the file
+    .WriteTo.File(new JsonFormatter(), path: "logs/jsonlogs.json",
+                restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
+                rollingInterval: RollingInterval.Day) // JSON formatter
     .WriteTo.File(path: "logs/errors.txt",
                 restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Warning) // will only write Errors to this file
     .CreateLogger();
