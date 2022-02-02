@@ -16,7 +16,7 @@ host.Services.UseScheduler(schedule =>
     // when and how our job will run
     // jobSchedule.EveryFiveMinutes().Weekday(); // example
     
-    jobSchedule.EverySeconds(2);
+    jobSchedule.EverySeconds(2).PreventOverlapping("ProcessOrderJob");
 });
 
 await host.RunAsync();
