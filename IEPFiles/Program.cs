@@ -1,7 +1,14 @@
 using IEPFiles;
 using Coravel;
+using Serilog;
+
+// creating the Serilog ILogger
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateLogger();
 
 IHost host = Host.CreateDefaultBuilder(args)
+    .UseSerilog()
     .ConfigureServices(services =>
     {
         //services.AddHostedService<Worker>();
