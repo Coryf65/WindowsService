@@ -22,10 +22,12 @@ try
     Log.Information("Starting service...");
 
     IHost host = Host.CreateDefaultBuilder(args)
+    //.UseWindowsService()
     .UseSerilog()
     .ConfigureServices(services =>
     {
         //services.AddHostedService<Worker>();
+        services.AddSingleton<IOrderConnector, OrderQueueConnector>();
         services.AddScheduler();
         services.AddTransient<ProcessOrder>();
     })

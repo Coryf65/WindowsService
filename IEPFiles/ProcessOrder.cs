@@ -5,34 +5,28 @@ namespace IEPFiles
     internal class ProcessOrder : IInvocable
     {
         private readonly ILogger _logger;
+        private readonly IOrderConnector _orderConnector;
 
-        public ProcessOrder(ILogger<ProcessOrder> logger)
+        public ProcessOrder(ILogger<ProcessOrder> logger, IOrderConnector orderConnector)
         {
             _logger = logger;
+            _orderConnector = orderConnector;
         }
 
         // Called by the coravel task scheduler when needed
         public async Task Invoke()
         {
-            // creating a dummy order
-            var order = new OrderInfo
+            var nextOrder = await _orderConnector.GetNextOrder();
+
+            if (nextOrder is not null)
             {
-                OrderID = Guid.NewGuid(),
-                ItemName = "BBQ Chicken Pizza",
-                QuantityOrdered = 1
-            };
+                _logger.LogInformation("Processing order {@order}", nextOrder);
 
-            // using serilog to serialize our object
-            _logger.LogInformation("Processing order {@order}", order);
+                // TODO: add order processing
 
-            //var jobId = Guid.NewGuid();
-            //_logger.LogInformation($"Starting job id {jobId}");
-
-            //await Task.Delay(3000); // wait 3 seconds
-            //_logger.LogWarning("some Error happened");
-            //_logger.LogInformation($"job with id: {jobId} is completed.");
-
-            // return Task.FromResult(true);
+                // tell azure we finished the order
+                await _orderConnector.RemoveOrder(nextOrder);
+            }
         }
     }
 }
